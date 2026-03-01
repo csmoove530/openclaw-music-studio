@@ -1,0 +1,80 @@
+{
+  "project": "/Users/cuylersheffield/openclaw-music-studio",
+  "files_scanned": 15,
+  "risk_score": 45,
+  "risk_level": "MEDIUM",
+  "total_findings": 7,
+  "findings_by_severity": {
+    "critical": 0,
+    "high": 2,
+    "medium": 5,
+    "low": 0,
+    "info": 0
+  },
+  "findings": {
+    "critical": [],
+    "high": [
+      {
+        "file": "config/openclaw.json",
+        "issue": "Potential Phone found",
+        "line": "\"8560246878\""
+      },
+      {
+        "file": "config/openclaw.json",
+        "issue": "Potential Phone found",
+        "line": "\"8560246878\""
+      }
+    ],
+    "medium": [
+      {
+        "file": "docker-compose.hardened.yml",
+        "issue": "Exposed Linux user path",
+        "line": "- /home/node/.npm:size=64M",
+        "path": "/home/node"
+      },
+      {
+        "file": "skills/remember-feedback/skill.md",
+        "issue": "Exposed Linux user path",
+        "line": "cat /home/node/.openclaw/agents/jr-producer/agent/soul.md",
+        "path": "/home/node"
+      },
+      {
+        "file": "skills/remember-feedback/skill.md",
+        "issue": "Exposed Linux user path",
+        "line": "cat >> /home/node/.openclaw/agents/jr-producer/agent/soul.md << 'FEEDBACK'",
+        "path": "/home/node"
+      },
+      {
+        "file": "skills/remember-feedback/skill.md",
+        "issue": "Exposed Linux user path",
+        "line": "cat >> /home/node/.openclaw/agents/jr-producer/agent/soul.md << 'FEEDBACK'",
+        "path": "/home/node"
+      },
+      {
+        "file": "skills/remember-feedback/skill.md",
+        "issue": "Exposed Linux user path",
+        "line": "- The soul.md file is at `/home/node/.openclaw/agents/jr-producer/agent/soul.md` inside the container",
+        "path": "/home/node"
+      }
+    ],
+    "low": [],
+    "info": []
+  },
+  "scanned_files": [
+    "README.md",
+    ".gitignore",
+    "docker-compose.hardened.yml",
+    "config/openclaw.json",
+    "config/env.template",
+    "config/seccomp-profile.json",
+    "config/env.example",
+    "agents/jr-producer/IDENTITY.md",
+    "agents/jr-producer/SOUL.md",
+    "agents/jr-producer/CLAUDE.md",
+    "scripts/setup.sh",
+    "scripts/kill-agent.sh",
+    "scripts/verify-security.sh",
+    "skills/evolink-music/skill.md",
+    "skills/remember-feedback/skill.md"
+  ]
+}

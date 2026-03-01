@@ -1,218 +1,359 @@
 # OpenClaw Music Studio
 
-Multiplayer AI music creation with JR, your collaborative music producer. Built on secure OpenClaw with EvoLink/Suno integration and ATXP payment support.
+Make music with friends using AI. In Telegram.
 
-## What This Is
+```
+You: "JR, make us a chill lo-fi beat for coding"
 
-A Telegram-based music creation experience where you and friends can make music together with AI:
+JR: Got it. Here's what I'm thinking:
+    - Style: lo-fi hip hop, jazzy samples
+    - Tempo: 85 BPM
+    - Duration: 120s
+    - Model: suno-v4 ($0.05)
 
-- **JR Producer** - AI music producer that generates tracks with Suno v4/v4.5/v5
-- **Multiplayer Mode** - Group chat support with user allowlisting
-- **ATXP Payments** - Pay for music generation through the ATXP network
-- **Persistent Memory** - JR remembers your preferences across sessions
+    Ready to generate?
 
-## Quick Start
+Friend: Add some rain sounds
 
-### 1. Clone and Build
+JR: Updated. Lo-fi with rain ambience. Generating now...
+
+JR: Done! Here's your track: [audio]
+    Like it? I can make it longer or try a different vibe.
+```
+
+That's it. You and your friends chat with JR, an AI music producer that generates real tracks with Suno.
+
+---
+
+## 5-Minute Setup
+
+### Prerequisites
+
+- Docker installed
+- Telegram account
+- API keys (get these first):
+  - [Anthropic API key](https://console.anthropic.com/)
+  - [Telegram bot token](https://t.me/BotFather) (message @BotFather, type `/newbot`)
+  - [EvoLink API key](https://evolink.ai) (for music generation)
+  - [ATXP connection](https://atxp.ai) (for payments)
+
+### Step 1: Clone and Build
 
 ```bash
-# Clone this repo
 git clone https://github.com/csmoove530/openclaw-music-studio.git
 cd openclaw-music-studio
 
-# Clone and build OpenClaw
+# Build OpenClaw (one-time)
 mkdir -p ~/openclaw-sandbox && cd ~/openclaw-sandbox
 git clone https://github.com/openclaw/openclaw.git
 cd openclaw && docker build -t openclaw:local -f Dockerfile .
 ```
 
-### 2. Configure Environment
+### Step 2: Configure
 
 ```bash
-# Copy and edit env file
-cp config/env.example ~/.openclaw-music/.env
-chmod 600 ~/.openclaw-music/.env
-
-# Edit with your values:
-# - ANTHROPIC_API_KEY
-# - TELEGRAM_BOT_TOKEN (from @BotFather)
-# - EVOLINK_API_KEY (from evolink.ai)
-# - ATXP_CONNECTION (your ATXP connection string)
+cd ~/openclaw-music-studio
+./scripts/setup.sh
 ```
 
-### 3. Add Your Friend's Telegram ID
+When prompted, enter:
+- Your Anthropic API key
+- Your Telegram bot token
+- Your EvoLink API key
+- Your ATXP connection string
 
-Edit `config/openclaw.json` and add your friend's user ID:
+### Step 3: Add Users
+
+Edit `~/.openclaw-music/openclaw.json`:
 
 ```json
-"channels": {
-  "telegram": {
-    "allowFrom": [
-      "455323659",
-      "YOUR_FRIENDS_USER_ID"
-    ],
-    "groupAllowFrom": [
-      "455323659",
-      "YOUR_FRIENDS_USER_ID"
-    ]
+{
+  "channels": {
+    "telegram": {
+      "allowFrom": ["YOUR_TELEGRAM_ID", "FRIEND_TELEGRAM_ID"],
+      "groupAllowFrom": ["YOUR_TELEGRAM_ID", "FRIEND_TELEGRAM_ID"]
+    }
   }
 }
 ```
 
-**How to get a Telegram user ID:**
-- Have them message [@userinfobot](https://t.me/userinfobot)
-- Or forward any of their messages to @userinfobot
+Get Telegram IDs: message [@userinfobot](https://t.me/userinfobot)
 
-### 4. Run Setup
-
-```bash
-./scripts/setup.sh
-```
-
-### 5. Start JR
+### Step 4: Start
 
 ```bash
 cd ~/openclaw-sandbox/openclaw
 docker compose -f docker-compose.yml -f docker-compose.hardened.yml up -d
 ```
 
-### 6. Create a Group Chat
+### Step 5: Create Group
 
-1. Create a Telegram group
-2. Add your bot (@YourBotName)
-3. Add your friend
-4. Start making music together
+1. Open Telegram
+2. Create a new group
+3. Add your bot
+4. Add your friend
+5. Send: `@YourBot make a track`
 
-## How It Works
+---
 
-### Music Generation
+## Music Generation
 
-JR uses EvoLink to access Suno's music generation models:
+### Models
 
-| Model | Quality | Max Duration | Best For |
-|-------|---------|--------------|----------|
-| suno-v4 | Good | 120s | Quick drafts |
-| suno-v4.5 | Better | 240s | Style control |
-| suno-v5 | Best | 240s | Final tracks |
+| Model | Quality | Duration | Cost | Use For |
+|-------|---------|----------|------|---------|
+| `suno-v4` | Good | 120s | ~$0.05 | Quick drafts, iteration |
+| `suno-v4.5` | Better | 240s | ~$0.10 | Style control |
+| `suno-v5` | Best | 240s | ~$0.15 | Final, polished tracks |
 
-### Generation Modes
+### Simple Mode
 
-**Simple Mode:** Describe what you want
+Just describe what you want:
+
 ```
-"Make an upbeat electronic track about summer nights"
-```
-
-**Custom Mode:** Full control
-```
-Write lyrics with [Verse], [Chorus], [Bridge] tags
-Specify style, tempo, vocal gender
+You: Make an upbeat electronic track about summer nights
 ```
 
-### ATXP Payments
+JR handles lyrics, arrangement, and style automatically.
 
-Music generation costs money via ATXP. JR will:
-1. Confirm with the group before generating
-2. Pay using your ATXP account
-3. Share results with everyone
+### Custom Mode
 
-### Multiplayer Flow
+Full control with lyrics and style tags:
 
-1. Someone suggests an idea
-2. Group discusses direction
-3. JR synthesizes input into generation parameters
-4. Confirm cost and generate
-5. Listen together, iterate
+```
+You: Make this song:
 
-## Skills
+[Verse]
+Walking through the neon streets tonight
+City lights reflecting in your eyes
 
-| Skill | Purpose |
-|-------|---------|
-| **evolink-music** | AI music generation with Suno |
-| **remember-feedback** | Save preferences across sessions |
+[Chorus]
+We're alive, we're on fire
+Nothing's gonna stop us now
 
-### Teaching JR Your Preferences
+Style: synthwave, 80s, driving beat
+Tempo: 128 BPM
+Vocals: female
+```
 
-Use trigger phrases:
-- "Remember that we like heavy bass"
-- "Going forward, use v5 for final tracks"
-- "I prefer instrumental over vocals"
+### Parameters
 
-JR tracks who said what for multiplayer context.
+| Parameter | Options | Default |
+|-----------|---------|---------|
+| `model` | v4, v4.5, v5 | v4 |
+| `duration` | 30-240s | Model decides |
+| `instrumental` | true/false | false |
+| `vocal_gender` | m/f | Auto |
+| `style` | Any genre/mood tags | Auto |
+
+---
+
+## Multiplayer Features
+
+### How It Works
+
+```
+You: I want something dark and moody
+
+Friend: Yeah but make it danceable
+
+JR: Combining those: dark, moody atmosphere but with
+    a driving four-on-the-floor beat. Think dark
+    techno meets trip-hop. Sound right?
+
+You: Perfect
+
+JR: Generating with suno-v4.5...
+```
+
+JR synthesizes input from everyone, asks for confirmation, then generates.
+
+### Persistent Memory
+
+JR remembers preferences across sessions:
+
+```
+You: Remember that we like heavy bass
+
+JR: Noted. I'll prioritize bass-heavy production
+    for future tracks.
+```
+
+**Trigger phrases:**
+- "Remember that..."
+- "Going forward..."
+- "I prefer..."
+- "We like..."
+- "Always use..."
+- "Never use..."
+
+JR tracks who said what, so different collaborators can have different preferences.
+
+---
+
+## Commands Reference
+
+### Docker
+
+| Action | Command |
+|--------|---------|
+| Start | `docker compose -f docker-compose.yml -f docker-compose.hardened.yml up -d` |
+| Stop | `docker compose down` |
+| Logs | `docker compose logs -f openclaw-gateway` |
+| Emergency stop | `./scripts/kill-agent.sh` |
+
+### Telegram
+
+| Action | Example |
+|--------|---------|
+| Generate track | `@JR make a chill beat` |
+| Set model | `use v5 for this one` |
+| Iterate | `make it faster` or `add more bass` |
+| Save preference | `remember that I like 808s` |
+
+---
+
+## Troubleshooting
+
+### Bot doesn't respond
+
+```bash
+# Check if running
+docker compose ps
+
+# Check logs for errors
+docker compose logs -f openclaw-gateway
+```
+
+**Common fixes:**
+- Verify bot token is correct in `.env`
+- Confirm your Telegram ID is in `allowFrom`
+- Make sure bot is added to the group
+
+### Music generation fails
+
+```bash
+# Check EvoLink connection
+docker compose logs -f | grep -i evolink
+```
+
+**Common fixes:**
+- Verify `EVOLINK_API_KEY` is set
+- Check ATXP account has funds
+- Try a simpler prompt
+
+### Friend can't interact
+
+Ensure their Telegram ID is in **both** arrays:
+
+```json
+{
+  "allowFrom": ["your_id", "friend_id"],
+  "groupAllowFrom": ["your_id", "friend_id"]
+}
+```
+
+Then restart:
+```bash
+docker compose down && docker compose up -d
+```
+
+### Error Messages
+
+| Error | Cause | Fix |
+|-------|-------|-----|
+| `EVOLINK_API_KEY not set` | Missing env var | Add key to `.env` |
+| `ATXP connection failed` | Invalid connection string | Check ATXP dashboard |
+| `User not in allowlist` | Telegram ID not configured | Add to `allowFrom` |
+| `Rate limit exceeded` | Too many requests | Wait 60 seconds |
+
+---
 
 ## Security
 
-This runs on secure OpenClaw with:
+Runs in hardened Docker with:
 
-| Protection | What It Does |
-|------------|--------------|
-| Container isolation | HARD boundary |
+| Protection | Enforcement |
+|------------|-------------|
+| Container isolation | Kernel-enforced |
+| Read-only filesystem | Immutable root |
 | Telegram allowlist | Only whitelisted users |
-| Loopback gateway | No external access |
-| Workspace isolation | Agent stays in sandbox |
+| Loopback gateway | No external network access |
+| Resource limits | CPU/memory capped |
 
-See the [parent repo](https://github.com/csmoove530/Secure-OpenClaw-Research-Assistant) for full security docs.
+See [Secure-OpenClaw-Research-Assistant](https://github.com/csmoove530/Secure-OpenClaw-Research-Assistant) for full security documentation.
 
-## File Structure
+---
+
+## Project Structure
 
 ```
 openclaw-music-studio/
 ├── config/
-│   ├── openclaw.json      # Main config with user allowlists
-│   ├── env.example        # Secrets template
-│   └── seccomp-profile.json
-├── agents/
-│   └── jr-producer/
-│       ├── IDENTITY.md    # JR's identity
-│       ├── SOUL.md        # Core personality
-│       └── CLAUDE.md      # Agent instructions
+│   ├── openclaw.json       # User allowlists, gateway config
+│   └── env.example         # Environment template
+├── agents/jr-producer/
+│   ├── IDENTITY.md         # Name, avatar, vibe
+│   ├── SOUL.md             # Personality, how to operate
+│   └── CLAUDE.md           # Agent instructions
 ├── skills/
-│   ├── evolink-music/     # Music generation
-│   │   └── skill.md
-│   └── remember-feedback/ # Persistent memory
-│       └── skill.md
+│   ├── evolink-music/      # Suno music generation
+│   └── remember-feedback/  # Persistent preferences
 ├── scripts/
-│   ├── setup.sh
-│   ├── kill-agent.sh
-│   └── verify-security.sh
-├── docker-compose.hardened.yml
-└── README.md
+│   ├── setup.sh            # Initial configuration
+│   ├── kill-agent.sh       # Emergency stop
+│   └── verify-security.sh  # Security audit
+└── docker-compose.hardened.yml
 ```
 
-## Troubleshooting
+---
 
-### Bot doesn't respond in group
+## Configuration Reference
 
-1. Check both users are in `groupAllowFrom`
-2. Make sure the bot is added to the group
-3. Try mentioning the bot: `@YourBot make a track`
+### openclaw.json
 
-### Music generation fails
-
-1. Check `EVOLINK_API_KEY` is set
-2. Verify ATXP connection has funds
-3. Check logs: `docker compose logs -f`
-
-### Friend can't see bot responses
-
-Ensure their user ID is in both:
-- `allowFrom` (for DMs)
-- `groupAllowFrom` (for group chats)
-
-## Common Commands
-
-```bash
-# Start JR
-docker compose -f docker-compose.yml -f docker-compose.hardened.yml up -d
-
-# View logs
-docker compose logs -f openclaw-gateway
-
-# Stop JR
-docker compose down
-
-# Emergency kill
-./scripts/kill-agent.sh
+```json
+{
+  "agents": {
+    "list": [{
+      "id": "jr-producer",
+      "name": "JR Music Producer",
+      "agentDir": "agents/jr-producer"
+    }]
+  },
+  "channels": {
+    "telegram": {
+      "enabled": true,
+      "dmPolicy": "allowlist",
+      "allowFrom": ["telegram_user_id"],
+      "groupPolicy": "allowlist",
+      "groupAllowFrom": ["telegram_user_id"],
+      "streamMode": "partial"
+    }
+  },
+  "gateway": {
+    "port": 18790,
+    "mode": "local",
+    "bind": "loopback"
+  }
+}
 ```
+
+### Environment Variables
+
+| Variable | Required | Description |
+|----------|----------|-------------|
+| `ANTHROPIC_API_KEY` | Yes | Claude API access |
+| `TELEGRAM_BOT_TOKEN` | Yes | From @BotFather |
+| `EVOLINK_API_KEY` | Yes | Music generation |
+| `ATXP_CONNECTION` | Yes | Payment network |
+| `OPENCLAW_GATEWAY_TOKEN` | Auto | Generated by setup |
+
+---
+
+## Contributing
+
+Issues and PRs welcome at [github.com/csmoove530/openclaw-music-studio](https://github.com/csmoove530/openclaw-music-studio).
 
 ## License
 
