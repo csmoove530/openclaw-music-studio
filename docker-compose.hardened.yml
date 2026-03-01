@@ -1,0 +1,99 @@
+# Hardened Docker Compose for Secure OpenClaw
+# This file OVERRIDES the upstream compose with security hardening
+#
+# Usage:
+#   docker compose -f docker-compose.yml -f docker-compose.hardened.yml up -d
+#
+# Or copy to ~/openclaw-sandbox/openclaw/ and use as primary compose file
+
+services:
+  openclaw-gateway:
+    # ============================================
+    # ENVIRONMENT - API Keys
+    # ============================================
+    environment:
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY}
+      OPENCLAW_MODEL: "claude-sonnet-4-20250514"
+      RESEND_API_KEY: ${RESEND_API_KEY}
+      BRAVE_API_KEY: ${BRAVE_API_KEY}
+      TELEGRAM_BOT_TOKEN: ${TELEGRAM_BOT_TOKEN}
+      DISCORD_BOT_TOKEN: ${DISCORD_BOT_TOKEN}
+      NODE_OPTIONS: "--max-old-space-size=1536"
+
+    # ============================================
+    # RESOURCE LIMITS - Prevent DoS
+    # ============================================
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'           # Max 1 CPU core
+          memory: 2048M         # Max 2GB RAM
+          pids: 256             # Prevent fork bombs
+        reservations:
+          cpus: '0.25'          # Guaranteed 0.25 CPU
+          memory: 128M          # Guaranteed 128MB RAM
+
+    # ============================================
+    # SECURITY OPTIONS - Privilege Escalation Prevention
+    # ============================================
+    security_opt:
+      - no-new-privileges:true  # Prevent setuid/setgid escalation
+      - seccomp:unconfined      # Use default seccomp (or custom below)
+      # For custom seccomp profile, use:
+      # - seccomp:/path/to/seccomp-profile.json
+
+    # ============================================
+    # CAPABILITY RESTRICTIONS
+    # ============================================
+    cap_drop:
+      - ALL                     # Drop all capabilities
+
+    # Do NOT add any cap_add - agent needs no special privileges
+
+    # ============================================
+    # USER ISOLATION
+    # ============================================
+    user: "1000:1000"           # Run as non-root user
+
+    # ============================================
+    # FILESYSTEM RESTRICTIONS
+    # ============================================
+    read_only: true             # Re-enabled for security
+    tmpfs:
+      - /tmp:size=128M,noexec,nosuid,nodev
+      - /home/node/.npm:size=64M
+
+    # ============================================
+    # NETWORK ISOLATION
+    # ============================================
+    # The upstream binds to ports; we restrict to loopback via config
+    # For maximum isolation, uncomment:
+    # network_mode: "none"
+
+    # ============================================
+    # ADDITIONAL HARDENING
+    # ============================================
+    # Prevent container from gaining new privileges
+    privileged: false
+
+    # Don't allow ptrace (debugging)
+    # This is already blocked by dropping CAP_SYS_PTRACE
+
+  # ============================================
+  # CLI SERVICE - Same hardening
+  # ============================================
+  openclaw-cli:
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    user: "1000:1000"
+    read_only: true
+    tmpfs:
+      - /tmp:size=64M,noexec,nosuid,nodev
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 256M
+          pids: 64

@@ -1,0 +1,37 @@
+# Secrets - NEVER commit these
+.env
+*.env
+.env.*
+!.env.template
+!env.template
+
+# Credentials
+credentials/
+*.pem
+*.key
+*.cert
+*.p12
+
+# Token files
+*token*
+*secret*
+
+# Local config with real values
+openclaw.local.json
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Logs
+*.log
+logs/
+
+# Node modules (if any)
+node_modules/

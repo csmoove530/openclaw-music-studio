@@ -1,0 +1,76 @@
+{
+  "logging": {
+    "redactSensitive": "tools"
+  },
+  "agents": {
+    "defaults": {
+      "compaction": {
+        "mode": "safeguard"
+      },
+      "maxConcurrent": 4,
+      "subagents": {
+        "maxConcurrent": 8
+      }
+    },
+    "list": [
+      {
+        "id": "jr-producer",
+        "default": true,
+        "name": "JR Music Producer",
+        "agentDir": "agents/jr-producer"
+      }
+    ]
+  },
+  "commands": {
+    "native": "auto",
+    "nativeSkills": "auto"
+  },
+  "channels": {
+    "telegram": {
+      "enabled": true,
+      "dmPolicy": "allowlist",
+      "allowFrom": [
+        "455323659",
+        "8560246878"
+      ],
+      "groupPolicy": "allowlist",
+      "groupAllowFrom": [
+        "455323659",
+        "8560246878"
+      ],
+      "streamMode": "partial"
+    }
+  },
+  "discovery": {
+    "mdns": {
+      "mode": "off"
+    }
+  },
+  "gateway": {
+    "port": 18790,
+    "mode": "local",
+    "bind": "loopback",
+    "auth": {
+      "mode": "token"
+    }
+  },
+  "messages": {
+    "ackReactionScope": "group-mentions"
+  },
+  "plugins": {
+    "entries": {
+      "telegram": {
+        "enabled": true
+      }
+    }
+  },
+  "tools": {
+    "fs": {
+      "workspaceOnly": true
+    },
+    "exec": {
+      "security": "full",
+      "ask": "off"
+    }
+  }
+}
